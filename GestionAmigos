@@ -1,0 +1,116 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class GestionAmigos {
+
+    private JTextField nombreField;
+    private JTextField numeroField;
+    private JTextArea areaContactos;
+
+    public GestionAmigos() {
+        JFrame frame = new JFrame("Gestión de Contactos");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+
+        JPanel panelEntrada = new JPanel();
+        panelEntrada.setLayout(new GridLayout(3, 2));
+
+        panelEntrada.add(new JLabel("Nombre:"));
+        nombreField = new JTextField();
+        panelEntrada.add(nombreField);
+
+        panelEntrada.add(new JLabel("Número:"));
+        numeroField = new JTextField();
+        panelEntrada.add(numeroField);
+
+        JPanel panelBotones = new JPanel();
+        panelBotones.setLayout(new FlowLayout());
+
+        JButton agregarButton = new JButton("Agregar");
+        agregarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String nombre = nombreField.getText();
+                try {
+                    long numero = Long.parseLong(numeroField.getText());
+                    if (!AñadirAmigo.existeContacto(nombre, numero)) {
+                        AñadirAmigo.main(new String[]{nombre, String.valueOf(numero)});
+                        mostrarMensaje("Amigo agregado.");
+                    } else {
+                        mostrarMensaje("El amigo ya existe.");
+                    }
+                    actualizarListaContactos();
+                } catch (NumberFormatException ex) {
+                    mostrarMensaje("Número inválido.");
+                }
+            }
+        });
+        panelBotones.add(agregarButton);
+
+        JButton actualizarButton = new JButton("Actualizar");
+        actualizarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String nombre = nombreField.getText();
+                try {
+                    long numero = Long.parseLong(numeroField.getText());
+                    ActualizarAmigo.main(new String[]{nombre, String.valueOf(numero)});
+                    mostrarMensaje("Amigo actualizado.");
+                    actualizarListaContactos();
+                } catch (NumberFormatException ex) {
+                    mostrarMensaje("Número inválido.");
+                }
+            }
+        });
+        panelBotones.add(actualizarButton);
+
+        JButton eliminarButton = new JButton("Eliminar");
+        eliminarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String nombre = nombreField.getText();
+                if (EliminarAmigo.main(new String[]{nombre})) {
+                    mostrarMensaje("Amigo eliminado.");
+                } else {
+                    mostrarMensaje("El amigo no existe.");
+                }
+                actualizarListaContactos();
+            }
+        });
+        panelBotones.add(eliminarButton);
+
+        JButton mostrarButton = new JButton("Mostrar");
+        mostrarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                areaContactos.setText(MostrarAmigos.getContactos());
+            }
+        });
+        panelBotones.add(mostrarButton);
+
+        panelEntrada.add(panelBotones);
+
+        areaContactos = new JTextArea();
+        areaContactos.setEditable(false);
+        areaContactos.setLineWrap(true);
+        areaContactos.setWrapStyleWord(true);
+        frame.add(new JScrollPane(areaContactos), BorderLayout.CENTER);
+
+        frame.add(panelEntrada, BorderLayout.NORTH);
+
+        frame.pack();
+        frame.setMinimumSize(new Dimension(400, 300)); // Establece un tamaño mínimo
+        frame.setVisible(true);
+        frame.setLocationRelativeTo(null); // Centra la ventana en la pantalla
+    }
+
+    private void mostrarMensaje(String mensaje) {
+        JOptionPane.showMessageDialog(null, mensaje);
+    }
+
+    private void actualizarListaContactos() {
+        areaContactos.setText(MostrarAmigos.getContactos());
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(GestionAmigos::new);
+    }
+}
