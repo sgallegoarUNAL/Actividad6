@@ -1,0 +1,26 @@
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
+public class MostrarAmigos {
+
+    public static String getContactos() {
+        StringBuilder contactos = new StringBuilder();
+        try {
+            File file = new File("friendsContact.txt");
+            if (!file.exists()) {
+                return "No hay contactos.";
+            }
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            while (raf.getFilePointer() < raf.length()) {
+                String line = raf.readLine();
+                String[] lineSplit = line.split("!");
+                contactos.append("Nombre: ").append(lineSplit[0]).append(", Número: ").append(lineSplit[1]).append("\n");
+            }
+            raf.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return contactos.toString();
+    }
+}
